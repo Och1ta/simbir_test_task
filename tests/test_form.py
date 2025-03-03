@@ -1,5 +1,6 @@
 import pytest
 
+import allure
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -38,6 +39,7 @@ def filled_form(driver):
     return form_page
 
 
+@allure.feature("Проверка ввода данных")
 def test_input_fields(driver):
     form_page = FormPage(driver)
     form_page.fill_name(INPUT_NAME)
@@ -49,6 +51,7 @@ def test_input_fields(driver):
     assert form_page.get_email_value() == INPUT_EMAIL, "Email введен неправильно"
 
 
+@allure.feature("Проверка чекбоксов и цвета")
 def test_checkboxes_and_color(driver):
     form_page = FormPage(driver)
     checkboxes = driver.find_elements(*XPATH_CHECKBOX)
@@ -64,7 +67,7 @@ def test_checkboxes_and_color(driver):
     assert form_page.is_color_selected(), "Цвет не выбран"
 
 
-
+@allure.feature("Проверка выпадающего списка и текстового поля")
 def test_dropdown_and_textarea(driver):
     form_page = FormPage(driver)
     form_page.select_dropdown()
@@ -75,18 +78,20 @@ def test_dropdown_and_textarea(driver):
     assert len(max_length_word) > 0, "Максимальное слово не найдено"
 
 
+@allure.feature("Проверка отправки формы")
 def test_form_submission(filled_form):
     submit_button = WebDriverWait(filled_form.driver, 10).until(
         EC.element_to_be_clickable((By.ID, "submit-btn"))
     )
 
-    try:
-        submit_button.click()
-    except:
-        filled_form.driver.execute_script("arguments[0].click();", submit_button)
+    with allure.step("Клик по кнопке отправки"):
+        try:
+            submit_button.click()
+        except:
+            filled_form.driver.execute_script("arguments[0].click();", submit_button)
 
-    alert = WebDriverWait(filled_form.driver, 10).until(EC.alert_is_present())
-    alert_text = alert.text
-
-    assert alert_text == "Message received!", "Сообщение после отправки неверное"
-    alert.accept()
+    with allure.step("Проверка появления alert с текстом 'Message received!'"):
+        alert = WebDriverWait(filled_form.driver, 10).until(EC.alert_is_present())
+        alert_text = alert.text
+        assert alert_text == "Message received!", "Сообщение после отправки неверное"
+        alert.accept()
