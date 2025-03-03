@@ -31,9 +31,28 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-## Запуск
+### Установите Allure CLI
+*  MacOS 
+```bash 
+brew install allure
+```
+*  Windows 
 ```bash
-pytest
+choco install allure
+```
+*  Linux
+```bash
+sudo apt-add-repository ppa:qameta/allure
+sudo apt update
+sudo apt install allure
+```
+### Запуск c Allure
+```bash
+pytest --alluredir=allure-results
+```
+### Просмотр отчета Allure
+```bash
+allure serve allure-results
 ```
 
 ## Автор:
